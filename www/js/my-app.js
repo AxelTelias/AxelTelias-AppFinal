@@ -40,3 +40,49 @@ $$(document).on('page:init', '.page[data-name="about"]', function (e) {
   console.log(e);
   alert('Hello');
 });
+
+const email = document.getElementById('remail');
+const password = document.getElementById('rcontraseña');
+var emailDelUser = email.value;
+var passDelUser = password.value;
+
+firebase
+  .auth()
+  .signInWithEmailAndPassword(emailDelUser, passDelUser)
+  .then((userCredential) => {
+    // Signed in
+    var user = userCredential.user;
+
+    console.log('Bienvenid@!!! ' + emailDelUser);
+    // ...
+  })
+  .catch((error) => {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+
+    console.error(errorCode);
+    console.error(errorMessage);
+  });
+
+var emailDelUser = 'elvalor@delmail.com';
+var passDelUser = '1234567890';
+firebase
+  .auth()
+  .createUserWithEmailAndPassword(emailDelUser, passDelUser)
+  .then((userCredential) => {
+    // Signed in
+    var user = userCredential.user;
+    console.log('Bienvenid@!!! ' + emailDelUser);
+    // ...
+    mainView.router.navigate('/siguientePantallaDeUsuarioOK/');
+  })
+  .catch((error) => {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    console.error(errorCode);
+    console.error(errorMessage);
+    if (errorCode == 'auth/email-already-in-use') {
+      console.error('el mail ya esta usado');
+    }
+    // ..
+  });
