@@ -41,6 +41,7 @@ $$(document).on('page:init', '.page[data-name="about"]', function (e) {
   alert('Hello');
 });
 
+
 const email = document.getElementById('remail');
 const password = document.getElementById('rcontraseña');
 var emailDelUser = email.value;
