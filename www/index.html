@@ -84,7 +84,9 @@
                         <!-- CONTENIDO DEMO -->
                         <a href="/about/" class="col button button-fill button-round">About</a>
                         <br>
-                        <a href="/registro/" class="col button button-fill button-round">Registro</a>
+                        <a href="/registro/" class="col button button-fill button-round">Registrarse</a>
+                        <br>
+                        <a href="/login/" class="col button button-fill button-round">Ingresar</a>
                         
 
                         
@@ -99,17 +101,16 @@
         </div>
     </div>
 
-
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="lib/framework7/framework7-bundle.min.js"></script>
-    <!--<script type="text/javascript" src="lib/framework7/framework7.js"></script>-->
-    <script type="text/javascript" src="js/my-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-auth.js"></script>
+
     <script>
         // Your web app's Firebase configuration
         var firebaseConfig = {
             apiKey: "AIzaSyDSv-QgG8U-jLnSA3HVYkhnCzBzRmTsDFc",
             authDomain: "appfinal-programacion.firebaseapp.com",
+            
             projectId: "appfinal-programacion",
             storageBucket: "appfinal-programacion.appspot.com",
             messagingSenderId: "847714516364",
@@ -118,6 +119,11 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
     </script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="lib/framework7/framework7-bundle.min.js"></script>
+    <!--<script type="text/javascript" src="lib/framework7/framework7.js"></script>-->
+    <script type="text/javascript" src="js/my-app.js"></script>
+
   
 
 
