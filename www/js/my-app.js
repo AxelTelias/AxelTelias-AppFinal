@@ -18,11 +18,15 @@ var app = new Framework7({
     { path: '/index/', url: 'index.html' },
     { path: '/registro/', url: 'registro.html' },
     { path: '/login/', url: 'login.html' },
+    { path: '/datos-usuarios/', url: 'datos-usuarios.html' },
   ],
   // ... other parameters
 });
 
 var mainView = app.views.create('.view-main');
+
+var db = firebase.firestore();
+var colUsuario = db.collection('USUARIOS');
 
 // Handle Cordova Device Ready Event
 $$(document).on('deviceready', function () {
@@ -46,10 +50,6 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
   // Do something here when page with data-name="about" attribute loaded and initialized
 
   $$('.btnr').on('click', function () {
-    //var email = document.getElementById('remail');
-    //var assword = document.getElementById('rcontraseña');
-    //var emailDelUser = email.value;
-    //var passDelUser = password.value;
     var emailDelUser = $$('#remail').val();
     var passDelUser = $$('#rpassword').val();
     firebase
@@ -59,9 +59,29 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
         // Signed in
         var user = userCredential.user;
         console.log('Bienvenid@!!! ' + emailDelUser);
-        // ...
-        mainView.router.navigate('/siguientePantallaDeUsuarioOK/');
+
+        claveDeColeccion = emailDelUser;
+
+        nombre = $$('#rnombre').val();
+
+        datos = {
+          nombre: nombre,
+          rol: 'usuario',
+        };
+
+        colUsuario
+          .doc(claveDeColeccion)
+          .set(datos)
+          .then(() => {
+            console.log('Document successfully written!');
+          })
+          .catch((error) => {
+            console.error('Error writing document: ', error);
+          });
       })
+      // ...
+      //mainView.router.navigate('/siguientePantallaDeUsuarioOK/');
+
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -79,11 +99,12 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
 $$(document).on('page:init', '.page[data-name="login"]', function (e) {
   // Do something here when page with data-name="about" attribute loaded and initialized
 
+  var emailDelUser = '';
+
+  var db = firebase.firestore();
+  var colUsuario = db.collection('Usuarios');
+
   $$('.btnl').on('click', function () {
-    //var email = document.getElementById('lemail');
-    //var password = document.getElementById('lcontraseña');
-    //var passDelUser = email.value;
-    //var passDelUser = password.value;
     var emailDelUser = $$('#lemail').val();
     var passDelUser = $$('#lpassword').val();
 
@@ -95,6 +116,34 @@ $$(document).on('page:init', '.page[data-name="login"]', function (e) {
         var user = userCredential.user;
 
         console.log('Bienvenid@!!! ' + emailDelUser);
+
+        claveDeColeccion = emailDelUser;
+
+        var docRef = colUsuario.doc(claveDeColeccion);
+
+        docRef
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              console.log('Document data:', doc.data());
+
+              console.log(doc.id);
+              console.log(doc.data().nombre);
+              console.log(doc.data().rol);
+
+              if (doc.data().rol == 'admin') {
+                mainView.router.navigate('/panelAdmin/');
+              } else {
+                mainView.router.navigate('/panelUsuario/');
+              }
+            } else {
+              // doc.data() will be undefined in this case
+              console.log('No such document!');
+            }
+          })
+          .catch((error) => {
+            console.log('Error getting document:', error);
+          });
         // ...
       })
       .catch((error) => {
@@ -107,108 +156,27 @@ $$(document).on('page:init', '.page[data-name="login"]', function (e) {
   });
 });
 
-var emailDelUser = '';
+$$(document).on('page:init', '.page[data-name="datos-usuarios"]', function (e) {
+  // Do something here when page with data-name="about" attribute loaded and initialized
 
-var db = firebase.firestore();
-var colUsuario = db.collection('Usuarios');
+  var docRef = db.collection('cities').doc('SF');
 
-function fnLogin() {
-  emailDelUser = $$('#lEmail').val();
-  passDelUser = $$('#lPass').val();
+  // Valid options for source are 'server', 'cache', or
+  // 'default'. See https://firebase.google.com/docs/reference/js/firebase.firestore.GetOptions
+  // for more information.
+  var getOptions = {
+    source: 'cache',
+  };
 
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(emailDelUser, passDelUser)
-    .then((userCredential) => {
-      // Signed in
-      var user = userCredential.user;
-
-      console.log('Bienvenid@!!! ' + emailDelUser);
-
-      claveDeColeccion = emailDelUser;
-
-      var docRef = colUsuario.doc(claveDeColeccion);
-
-      docRef
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            console.log('Document data:', doc.data());
-
-            console.log(doc.id);
-            console.log(doc.data().nombre);
-            console.log(doc.data().rol);
-
-            if (doc.data().rol == 'admin') {
-              mainView.router.navigate('/panelAdmin/');
-            } else {
-              mainView.router.navigate('/panelUsuario/');
-            }
-          } else {
-            // doc.data() will be undefined in this case
-            console.log('No such document!');
-          }
-        })
-        .catch((error) => {
-          console.log('Error getting document:', error);
-        });
-
-      // ...
+  // Get a document, forcing the SDK to fetch from the offline cache.
+  docRef
+    .get(getOptions)
+    .then((doc) => {
+      // Document was found in the cache. If no cached document exists,
+      // an error will be returned to the 'catch' block below.
+      console.log('Cached document data:', doc.data());
     })
     .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-
-      console.error(errorCode);
-      console.error(errorMessage);
+      console.log('Error getting cached document:', error);
     });
-}
-
-function fnRegistro() {
-  // cada un@ pone su magia para recuperar el mail y la clave de un form...
-  emailDelUser = $$('#remail').val();
-  passDelUser = $$('#rpassword').val();
-
-  firebase
-    .auth()
-    .createUserWithEmailAndPassword(emailDelUser, passDelUser)
-    .then((userCredential) => {
-      // Signed in
-      var user = userCredential.user;
-      console.log('Bienvenid@!!! ' + emailDelUser);
-      // ...
-      //mainView.router.navigate('/siguientePantallaDeUsuarioOK/');
-
-      claveDeColeccion = emailDelUser;
-
-      nombre = $$('#rnombre').val();
-
-      datos = {
-        nombre: nombre,
-        rol: 'usuario',
-      };
-
-      colUsuario
-        .doc(claveDeColeccion)
-        .set(datos)
-        .then(() => {
-          console.log('Document successfully written!');
-        })
-        .catch((error) => {
-          console.error('Error writing document: ', error);
-        });
-    })
-    .catch((error) => {
-      var errorCode = error.code;
-      var errorMessage = error.message;
-
-      console.error(errorCode);
-      console.error(errorMessage);
-
-      if (errorCode == 'auth/email-already-in-use') {
-        console.error('el mail ya esta usado');
-      }
-
-      // ..
-    });
-}
+});
