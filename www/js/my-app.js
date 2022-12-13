@@ -28,6 +28,8 @@ var mainView = app.views.create('.view-main');
 var db = firebase.firestore();
 var colUsuario = db.collection('USUARIOS');
 
+var contRegistros = 0;
+
 // Handle Cordova Device Ready Event
 $$(document).on('deviceready', function () {
   console.log('Device is ready!');
@@ -157,26 +159,15 @@ $$(document).on('page:init', '.page[data-name="login"]', function (e) {
 });
 
 $$(document).on('page:init', '.page[data-name="datos-usuarios"]', function (e) {
-  // Do something here when page with data-name="about" attribute loaded and initialized
-
-  var docRef = db.collection('cities').doc('SF');
-
-  // Valid options for source are 'server', 'cache', or
-  // 'default'. See https://firebase.google.com/docs/reference/js/firebase.firestore.GetOptions
-  // for more information.
-  var getOptions = {
-    source: 'cache',
-  };
-
-  // Get a document, forcing the SDK to fetch from the offline cache.
-  docRef
-    .get(getOptions)
-    .then((doc) => {
-      // Document was found in the cache. If no cached document exists,
-      // an error will be returned to the 'catch' block below.
-      console.log('Cached document data:', doc.data());
+  colUsuario
+    .get()
+    .then(function (querySnapshot) {
+      querySnapshot.forEach(function (doc) {
+        console.log('data:' + doc.data().nombre);
+        console.log('data:' + doc.id);
+      });
     })
-    .catch((error) => {
-      console.log('Error getting cached document:', error);
+    .catch(function (error) {
+      console.log('Error: ', error);
     });
 });
