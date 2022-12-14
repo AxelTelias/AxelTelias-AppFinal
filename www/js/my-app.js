@@ -25,6 +25,8 @@ var app = new Framework7({
 
 var mainView = app.views.create('.view-main');
 
+var emailDelUser = '';
+
 var db = firebase.firestore();
 var colUsuario = db.collection('USUARIOS');
 
@@ -100,12 +102,6 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
 
 $$(document).on('page:init', '.page[data-name="login"]', function (e) {
   // Do something here when page with data-name="about" attribute loaded and initialized
-
-  var emailDelUser = '';
-
-  var db = firebase.firestore();
-  var colUsuario = db.collection('Usuarios');
-
   $$('.btnl').on('click', function () {
     var emailDelUser = $$('#lemail').val();
     var passDelUser = $$('#lpassword').val();
@@ -159,13 +155,29 @@ $$(document).on('page:init', '.page[data-name="login"]', function (e) {
 });
 
 $$(document).on('page:init', '.page[data-name="datos-usuarios"]', function (e) {
+  cuerpoTabla = '';
+
   colUsuario
     .get()
     .then(function (querySnapshot) {
       querySnapshot.forEach(function (doc) {
         console.log('data:' + doc.data().nombre);
         console.log('data:' + doc.id);
+
+        cuerpoTabla +=
+          '<tr><td>' +
+          doc.id +
+          '</td><td>' +
+          doc.data().nombre +
+          '</td><td>' +
+          doc.data().rol +
+          '</td></tr>';
+
+        //$$('.gmail').text(doc.id);
+        //$$('.name').text(doc.data().nombre);
       });
+
+      $$('#cuerpoTabla').html(cuerpoTabla);
     })
     .catch(function (error) {
       console.log('Error: ', error);
